@@ -1,0 +1,10 @@
+[package]
+name = "autogui"
+version = "0.1.0"
+authors = ["Hannes Karppila <hannes.karppila@gmail.com>"]
+
+[dependencies]
+lazy_static = "1.0"
+
+# [dependencies.core-foundation]
+core-graphics = "0.13.0"
