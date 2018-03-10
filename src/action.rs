@@ -1,3 +1,5 @@
+use keymap::Key;
+
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum ActionType {
     // mouse
@@ -13,8 +15,8 @@ pub(crate) enum ActionType {
 
     // keyboard
 
-    KeyDown(KeyCode),
-    KeyUp(KeyCode),
+    KeyDown(Key),
+    KeyUp(Key),
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -23,6 +25,3 @@ pub enum MouseButton {
     Right,
     //Middle
 }
-
-#[derive(Debug, Clone, Copy)]
-pub(crate) struct KeyCode(u16);

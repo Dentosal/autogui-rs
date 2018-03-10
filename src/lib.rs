@@ -1,19 +1,17 @@
 #![allow(dead_code)]
 
+#![feature(crate_in_paths)]
+
+extern crate libc;
+
 #[cfg(target_os = "macos")]
 extern crate core_graphics;
 
-use std::time::Duration;
-use std::thread::sleep;
-
 mod action;
-
-pub const ACTION_DELAY_MS: u64 = 20;
-
-#[cfg(target_os = "macos")]
-mod macos;
-
-use action::MouseButton;
+mod mouse;
+mod keymap;
+mod keyboard;
+mod platform;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Position {
@@ -31,106 +29,17 @@ impl Position {
     }
 }
 
-#[derive(Debug)]
-pub struct Mouse {
-    position: Position,
-    actual_position: Position
-}
-impl Mouse {
-    pub(crate) fn new() -> Mouse {
-        Mouse {
-            position: Position::new(0, 0),
-            actual_position: Position::new(0, 0),
-        }
-    }
-
-    fn is_placed(&self) -> bool {
-        self.position == self.actual_position
-    }
-
-    fn sync(self) -> Mouse {
-        if !self.is_placed() {
-            let p = self.position;
-            self.move_to(p)
-        }
-        else {
-            self
-        }
-    }
-
-    fn event(self, t: action::ActionType) -> Mouse {
-        println!("A: {:?} @ {:?}", t, self.position);
-        #[cfg(target_os = "macos")]
-        macos::process_event(t, self.position);
-
-        self
-    }
-
-    pub fn delay(self, d: Duration) -> Mouse {
-        sleep(d);
-        self
-    }
-
-    pub fn at(self, new_pos: Position) -> Mouse {
-        Mouse { position: new_pos, ..self }
-    }
-
-    pub fn move_to(self, new_pos: Position) -> Mouse {
-        let mouse = Mouse {
-            position: new_pos,
-            actual_position: new_pos
-        };
-
-        mouse.event(action::ActionType::MouseMove)
-    }
-
-    pub fn drag_to(self, button: MouseButton, new_pos: Position) -> Mouse {
-        let start_pos = self.position;
-
-        // drag end
-        self
-        .move_to(start_pos)
-        .down(button)
-        .at(new_pos)
-        .event(action::ActionType::MouseDrag(button))
-        .up(button)
-    }
-
-    pub fn down(self, button: MouseButton) -> Mouse {
-        self.event(action::ActionType::MouseDown(button))
-    }
-
-    pub fn up(self, button: MouseButton) -> Mouse {
-        self.event(action::ActionType::MouseUp(button))
-    }
-
-    pub fn click(self) -> Mouse {
-        self.left_click()
-    }
-
-    pub fn left_click(self) -> Mouse {
-        self.event(action::ActionType::MouseClickN(MouseButton::Left, 1))
-    }
-
-    pub fn right_click(self) -> Mouse {
-        self.event(action::ActionType::MouseClickN(MouseButton::Right, 1))
-    }
-
-    pub fn doubleclick(self) -> Mouse {
-        self.event(action::ActionType::MouseClickN(MouseButton::Left, 2))
-    }
-}
 
 struct AutoGUI {
-    pub mouse: Mouse,
-    step_pause: Duration
+    pub mouse: mouse::Mouse,
+    pub keyboard: keyboard::Keyboard,
 }
 
 impl AutoGUI {
     pub fn new() -> AutoGUI {
         AutoGUI {
-            mouse: Mouse::new(),
-            step_pause: Duration::from_millis(ACTION_DELAY_MS)
+            mouse: mouse::Mouse::new(),
+            keyboard: keyboard::Keyboard::new(),
         }
     }
 }
@@ -139,15 +48,30 @@ impl AutoGUI {
 mod tests {
     use super::*;
 
+    use std::time::Duration;
+    use std::thread::sleep;
+
     #[test]
     fn test_name() {
         let gui = AutoGUI::new();
 
         let mut m = gui.mouse;
+        let mut k = gui.keyboard;
 
-        // m.at(Position::new(1370, 70)).drag_to(MouseButton::Left, Position::new(1370, 200));
+        m = m.at(Position::new(1370, 70)).drag_to(action::MouseButton::Left, Position::new(1370, 200));
+        m.at(Position::new(80, 80)).doubleclick();
 
-        m = m.at(Position::new(80, 80)).click();
-        m = m.at(Position::new(80, 80)).doubleclick();
+
+        use keymap::Key;
+
+        k = k.press(Key::LeftSuper).tap(Key::T).release(Key::LeftSuper);
+        k = k.tap(Key::L);
+        k = k.tap(Key::S);
+        k = k.tap(Key::Space);
+        k = k.tap(Key::Minus);
+        k = k.tap(Key::L);
+        k = k.tap(Key::Return);
+        sleep(Duration::from_millis(5000));
+        k.press(Key::LeftCtrl).tap(Key::D).release(Key::LeftCtrl);
     }
 }

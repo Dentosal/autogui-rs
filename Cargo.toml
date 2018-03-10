@@ -4,7 +4,9 @@ version = "0.1.0"
 authors = ["Hannes Karppila <hannes.karppila@gmail.com>"]
 
 [dependencies]
-lazy_static = "1.0"
+libc = "0.2"
 
 # [dependencies.core-foundation]
+
+[target.'cfg(target_os = "macos")'.dependencies]
 core-graphics = "0.13.0"
