@@ -2,6 +2,13 @@
 name = "autogui"
 version = "0.1.0"
 authors = ["Hannes Karppila <hannes.karppila@gmail.com>"]
+license = "MIT"
+
+description = "GUI Automation toolbox for Rust"
+repository = "https://github.com/Dentosal/autogui-rs"
+readme = "README.md"
+
+build = "build.rs"
 
 [dependencies]
 libc = "0.2"
