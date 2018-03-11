@@ -1,6 +1,6 @@
 use crate::Position;
 use action::{self, MouseButton};
-use actor::Actor;
+use actor::{Actor, ChainedAction};
 
 use action::InputAction;
 
@@ -138,3 +138,4 @@ impl Actor for Mouse {
         self
     }
 }
+impl ChainedAction for Mouse {}

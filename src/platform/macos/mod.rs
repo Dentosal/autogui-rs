@@ -23,7 +23,7 @@ fn get_default_source() -> CGEventSource {
 
 fn post_event(event: CGEvent) {
     event.post(CGEventTapLocation::HID);
-    sleep(Duration::from_millis(100));
+    sleep(Duration::from_millis(20));
 }
 
 pub(crate) fn process_event(a: InputAction, p: Option<Position>) {

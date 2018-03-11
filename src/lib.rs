@@ -28,6 +28,8 @@ pub use action::MouseButton;
 pub use mouse::Mouse;
 pub use keyboard::Keyboard;
 
+pub use actor::ChainedAction;
+
 /// Position on screen
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Position {

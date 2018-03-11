@@ -1,4 +1,4 @@
-use actor::Actor;
+use actor::{Actor, ChainedAction};
 use action;
 use keymap::Key;
 
@@ -49,3 +49,4 @@ impl Keyboard {
     }
 }
 impl Actor for Keyboard {}
+impl ChainedAction for Keyboard {}

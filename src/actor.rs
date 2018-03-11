@@ -13,7 +13,10 @@ pub(crate) trait Actor where Self: Sized {
         macos::process_event(t, None);
         self
     }
+}
 
+/// Methods to help working with chained actions
+pub trait ChainedAction where Self: Sized {
     /// Sleeps given amount of time
     fn delay(self, d: Duration) -> Self {
         sleep(d);
