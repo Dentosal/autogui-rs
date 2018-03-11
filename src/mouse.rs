@@ -1,12 +1,13 @@
-use std::time::Duration;
-use std::thread::sleep;
-
 use crate::Position;
 use action::{self, MouseButton};
+use actor::Actor;
+
+use action::InputAction;
 
 #[cfg(target_os = "macos")]
 use crate::platform::macos;
 
+/// Mouse controller
 #[derive(Debug)]
 pub struct Mouse {
     position: Position,
@@ -37,17 +38,6 @@ impl Mouse {
         }
     }
 
-    fn event(self, t: action::InputAction) -> Mouse {
-        #[cfg(target_os = "macos")]
-        macos::process_event(t, Some(self.position));
-        self
-    }
-
-    pub fn delay(self, d: Duration) -> Mouse {
-        sleep(d);
-        self
-    }
-
     /// Perform next event at given position
     pub fn at(self, new_pos: Position) -> Mouse {
         Mouse { position: new_pos, ..self }
@@ -63,8 +53,23 @@ impl Mouse {
         mouse.event(action::InputAction::MouseMove)
     }
 
-    /// Drag from the current position to new position
-    pub fn drag_to(self, button: MouseButton, new_pos: Position) -> Mouse {
+    /// Alias for left_drag_to
+    pub fn drag_to(self, new_pos: Position) -> Mouse {
+        self.left_drag_to(new_pos)
+    }
+
+    /// Drag from the current position to new position with left mouse button
+    pub fn left_drag_to(self, new_pos: Position) -> Mouse {
+        self.drag_to_with(new_pos, MouseButton::Left)
+    }
+
+    /// Drag from the current position to new position with right mouse button
+    pub fn right_drag_to(self, new_pos: Position) -> Mouse {
+        self.drag_to_with(new_pos, MouseButton::Right)
+    }
+
+    /// Drag from the current position to new position with given mouse button
+    pub fn drag_to_with(self, new_pos: Position, button: MouseButton) -> Mouse {
         let start_pos = self.position;
 
         // drag end
@@ -124,5 +129,12 @@ impl Mouse {
     /// Double click with the given mouse button
     pub fn doubleclick_with(self, button: MouseButton) -> Mouse {
         self.event(action::InputAction::MouseClickN(button, 2))
+    }
+}
+impl Actor for Mouse {
+    fn event(self, t: InputAction) -> Self {
+        #[cfg(target_os = "macos")]
+        macos::process_event(t, Some(self.position));
+        self
     }
 }

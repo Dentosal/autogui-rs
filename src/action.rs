@@ -21,6 +21,7 @@ pub(crate) enum InputAction {
 }
 
 /// Mouse buttons
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Copy)]
 pub enum MouseButton {
     Left,

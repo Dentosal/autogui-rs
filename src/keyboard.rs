@@ -1,37 +1,33 @@
-#[cfg(target_os = "macos")]
-use crate::platform::macos;
-
+use actor::Actor;
 use action;
 use keymap::Key;
 
+/// Keyboard controller
 #[derive(Debug)]
-pub struct Keyboard {
-}
+pub struct Keyboard {}
 impl Keyboard {
-    pub fn new() -> Keyboard {
+    pub(crate) fn new() -> Keyboard {
         Keyboard {}
     }
 
-    fn event(self, t: action::InputAction) -> Keyboard {
-        #[cfg(target_os = "macos")]
-        macos::process_event(t, None);
-        self
-    }
-
+    /// Press key down
     pub fn press(self, key: Key) -> Keyboard {
         self.event(action::InputAction::KeyDown(key))
     }
 
+    /// Release key
     pub fn release(self, key: Key) -> Keyboard {
         self.event(action::InputAction::KeyUp(key))
     }
 
+    /// Press and release key
     pub fn tap(self, key: Key) -> Keyboard {
         self
         .event(action::InputAction::KeyDown(key))
         .event(action::InputAction::KeyUp(key))
     }
 
+    /// Write a string
     pub fn write(mut self, s: &str) -> Keyboard {
         for c in s.chars() {
             let shift = c.is_ascii_uppercase();
@@ -52,3 +48,4 @@ impl Keyboard {
         self
     }
 }
+impl Actor for Keyboard {}

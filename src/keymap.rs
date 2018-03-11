@@ -1,4 +1,5 @@
 /// A non-virtual key code (e.g. Key::A produces "A")
+#[allow(missing_docs)]
 #[derive(Debug, Clone, Copy)]
 pub enum Key {
     Backspace,

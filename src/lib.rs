@@ -8,7 +8,6 @@
 #![deny(unreachable_patterns)]
 
 #![feature(crate_in_paths)]
-#![feature(inclusive_range_syntax)]
 #![feature(slice_patterns)]
 
 extern crate libc;
@@ -18,10 +17,16 @@ extern crate image;
 #[cfg(target_os = "macos")] extern crate core_graphics;
 
 mod action;
-mod mouse;
+mod actor;
 mod keymap;
+mod mouse;
 mod keyboard;
 mod platform;
+
+pub use keymap::Key;
+pub use action::MouseButton;
+pub use mouse::Mouse;
+pub use keyboard::Keyboard;
 
 /// Position on screen
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -73,36 +78,8 @@ impl AutoGUI {
 mod tests {
     use super::*;
 
-    use std::path::Path;
-    use std::time::Duration;
-    use std::thread::sleep;
-
     #[test]
-    fn test_name() {
-        let gui = AutoGUI::new();
-
-        let mut m = gui.mouse;
-        let mut k = gui.keyboard;
-
-        m = m.at(Position::new(1370, 70)).drag_to(action::MouseButton::Left, Position::new(1370, 200));
-        m.at(Position::new(80, 80)).doubleclick();
-
-        for (i, s) in AutoGUI::screenshot().iter().enumerate() {
-            s.save(Path::new(&format!("screen_{}.png", i))).unwrap();
-        }
-
-        use keymap::Key;
-
-        k = k.press(Key::LeftSuper).tap(Key::T).release(Key::LeftSuper);
-        k = k.write("ls -A");
-        k = k.tap(Key::Return);
-
-        for i in 1..=5 {
-            k = k.write(&format!("echo {}", i));
-            k = k.tap(Key::Return);
-            sleep(Duration::from_millis(1000));
-        }
-
-        k.press(Key::LeftCtrl).tap(Key::D).release(Key::LeftCtrl);
+    fn test_mouse_move() {
+        AutoGUI::new().mouse.move_to(Position::new(100, 100));
     }
 }
