@@ -5,7 +5,6 @@
 #![warn(unused_import_braces)]
 #![warn(missing_docs)]
 #![deny(trivial_casts, trivial_numeric_casts)]
-#![deny(unused_results)]
 #![deny(unreachable_patterns)]
 
 #![feature(crate_in_paths)]
