@@ -1,6 +1,6 @@
 [package]
 name = "autogui"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Hannes Karppila <hannes.karppila@gmail.com>"]
 license = "MIT"
 

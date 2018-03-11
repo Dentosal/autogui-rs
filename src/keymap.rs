@@ -74,6 +74,7 @@ pub enum Key {
     ArrowRight,
 }
 impl Key {
+    /// Character this key is supposed to produce
     pub fn to_char(self) -> Option<char> {
         match self {
             Key::Tab            => Some('\t'),
@@ -162,6 +163,7 @@ impl Key {
         }
     }
 
+    /// Key is that produces this character
     pub fn from_char(c: char) -> Option<Key> {
         assert!(!c.is_ascii_uppercase());
 

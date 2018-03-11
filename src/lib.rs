@@ -1,4 +1,12 @@
-#![allow(dead_code)]
+//! # AutoGUI - GUI automation toolbox
+//! Automate tasks performed with mouse and keyboard
+
+// enforce proper style
+#![warn(unused_import_braces)]
+#![warn(missing_docs)]
+#![deny(trivial_casts, trivial_numeric_casts)]
+#![deny(unused_results)]
+#![deny(unreachable_patterns)]
 
 #![feature(crate_in_paths)]
 #![feature(inclusive_range_syntax)]
@@ -16,16 +24,21 @@ mod keymap;
 mod keyboard;
 mod platform;
 
+/// Position on screen
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Position {
+    /// X axis
     pub x: u32,
+    /// Y axis
     pub y: u32
 }
 impl Position {
+    /// Creates new Position
     pub fn new(x: u32, y: u32) -> Position {
         Position { x, y }
     }
-    fn distance_to(&self, other: Position) -> u32 {
+    /// Distance from self to other position, rounded to u32
+    pub fn distance_to(&self, other: Position) -> u32 {
         let dx = (self.x.max(other.x) - self.x.max(other.x)).pow(2);
         let dy = (self.y.max(other.y) - self.y.max(other.y)).pow(2);
         ((dx + dy) as f32).sqrt().round() as u32
@@ -33,12 +46,16 @@ impl Position {
 }
 
 
-struct AutoGUI {
+/// Collection of GUI automation tools
+pub struct AutoGUI {
+    /// Mouse
     pub mouse: mouse::Mouse,
+    /// Keyboard
     pub keyboard: keyboard::Keyboard,
 }
 
 impl AutoGUI {
+    /// New AutoGUI object, with mouse and keyboard in initial state
     pub fn new() -> AutoGUI {
         AutoGUI {
             mouse: mouse::Mouse::new(),
@@ -46,7 +63,8 @@ impl AutoGUI {
         }
     }
 
-    fn screenshot() -> Vec<image::RgbaImage> {
+    /// Takes screenshot from all screens and returns them in a Vec
+    pub fn screenshot() -> Vec<image::RgbaImage> {
         #[cfg(target_os = "macos")]
         platform::macos::screenshot::all_screens()
     }

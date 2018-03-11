@@ -7,7 +7,7 @@ use core_graphics::geometry::CGPoint;
 use core_graphics::event::{CGEvent, CGEventTapLocation};
 use core_graphics::event_source::{CGEventSource, CGEventSourceStateID};
 
-use action::ActionType;
+use action::InputAction;
 use crate::Position;
 
 mod mouse;
@@ -26,7 +26,7 @@ fn post_event(event: CGEvent) {
     sleep(Duration::from_millis(100));
 }
 
-pub(crate) fn process_event(a: ActionType, p: Option<Position>) {
+pub(crate) fn process_event(a: InputAction, p: Option<Position>) {
     const P_REQUIRED: &'static str = "Point required with mouse events";
 
     let point = p.map(|pos| {
@@ -37,13 +37,12 @@ pub(crate) fn process_event(a: ActionType, p: Option<Position>) {
     });
 
     match a {
-        ActionType::MouseMove               => mouse_move(point.expect(P_REQUIRED)),
-        ActionType::MouseUp(button)         => mouse_up(  button, point.expect(P_REQUIRED)),
-        ActionType::MouseDown(button)       => mouse_down(button, point.expect(P_REQUIRED)),
-        ActionType::MouseDrag(button)       => mouse_drag(button, point.expect(P_REQUIRED)),
-        ActionType::MouseClickN(button, n)  => mouse_n_click(button, point.expect(P_REQUIRED), n),
-        ActionType::KeyUp(key)              => keyboard::keyboard_event(key, false),
-        ActionType::KeyDown(key)            => keyboard::keyboard_event(key, true),
-        _ => unimplemented!()
+        InputAction::MouseMove               => mouse_move(point.expect(P_REQUIRED)),
+        InputAction::MouseUp(button)         => mouse_up(  button, point.expect(P_REQUIRED)),
+        InputAction::MouseDown(button)       => mouse_down(button, point.expect(P_REQUIRED)),
+        InputAction::MouseDrag(button)       => mouse_drag(button, point.expect(P_REQUIRED)),
+        InputAction::MouseClickN(button, n)  => mouse_n_click(button, point.expect(P_REQUIRED), n),
+        InputAction::KeyUp(key)              => keyboard::keyboard_event(key, false),
+        InputAction::KeyDown(key)            => keyboard::keyboard_event(key, true),
     }
 }

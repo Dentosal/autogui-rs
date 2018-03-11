@@ -1,7 +1,8 @@
 use keymap::Key;
 
+/// Input actions
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum ActionType {
+pub(crate) enum InputAction {
     // mouse
 
     MouseUp(MouseButton),
@@ -11,7 +12,7 @@ pub(crate) enum ActionType {
     MouseDrag(MouseButton),
 
     MouseMove,
-    ScrollWheel,
+    // ScrollWheel, // TODO: add support
 
     // keyboard
 
@@ -19,6 +20,7 @@ pub(crate) enum ActionType {
     KeyUp(Key),
 }
 
+/// Mouse buttons
 #[derive(Debug, Clone, Copy)]
 pub enum MouseButton {
     Left,

@@ -12,24 +12,24 @@ impl Keyboard {
         Keyboard {}
     }
 
-    fn event(self, t: action::ActionType) -> Keyboard {
+    fn event(self, t: action::InputAction) -> Keyboard {
         #[cfg(target_os = "macos")]
         macos::process_event(t, None);
         self
     }
 
     pub fn press(self, key: Key) -> Keyboard {
-        self.event(action::ActionType::KeyDown(key))
+        self.event(action::InputAction::KeyDown(key))
     }
 
     pub fn release(self, key: Key) -> Keyboard {
-        self.event(action::ActionType::KeyUp(key))
+        self.event(action::InputAction::KeyUp(key))
     }
 
     pub fn tap(self, key: Key) -> Keyboard {
         self
-        .event(action::ActionType::KeyDown(key))
-        .event(action::ActionType::KeyUp(key))
+        .event(action::InputAction::KeyDown(key))
+        .event(action::InputAction::KeyUp(key))
     }
 
     pub fn write(mut self, s: &str) -> Keyboard {
