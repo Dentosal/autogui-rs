@@ -31,4 +31,24 @@ impl Keyboard {
         .event(action::ActionType::KeyDown(key))
         .event(action::ActionType::KeyUp(key))
     }
+
+    pub fn write(mut self, s: &str) -> Keyboard {
+        for c in s.chars() {
+            let shift = c.is_ascii_uppercase();
+            let lookup_c: char = if shift { c.to_ascii_lowercase() } else { c };
+            let k = Key::from_char(lookup_c).expect(&format!("Could not type '{}': unknown key", c));
+
+            if shift {
+                self = self.press(Key::LeftShift);
+            }
+
+            self = self.tap(k);
+
+            if shift {
+                self = self.release(Key::LeftShift);
+            }
+        }
+
+        self
+    }
 }

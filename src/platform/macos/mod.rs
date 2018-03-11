@@ -13,6 +13,7 @@ use crate::Position;
 mod mouse;
 mod keyboard;
 mod keymap;
+pub mod screenshot;
 
 use self::mouse::{mouse_move, mouse_up, mouse_down, mouse_drag, mouse_n_click};
 
