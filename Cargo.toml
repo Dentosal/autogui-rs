@@ -1,6 +1,6 @@
 [package]
 name = "autogui"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Hannes Karppila <hannes.karppila@gmail.com>"]
 license = "MIT"
 
@@ -12,8 +12,8 @@ build = "build.rs"
 
 [dependencies]
 libc = "0.2"
-
-# [dependencies.core-foundation]
+image = "0.18"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-graphics = "0.13.0"
+core-foundation = "0.5"
