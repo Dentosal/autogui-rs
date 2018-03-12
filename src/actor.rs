@@ -4,13 +4,11 @@ use std::time::Duration;
 
 use action::InputAction;
 
-#[cfg(target_os = "macos")]
-use crate::platform::macos;
+use crate::platform;
 
 pub(crate) trait Actor where Self: Sized {
     fn event(self, t: InputAction) -> Self {
-        #[cfg(target_os = "macos")]
-        macos::process_event(t, None);
+        platform::current::process_event(t, None);
         self
     }
 }

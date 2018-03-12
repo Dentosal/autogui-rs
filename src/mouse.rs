@@ -4,8 +4,7 @@ use actor::{Actor, ChainedAction};
 
 use action::InputAction;
 
-#[cfg(target_os = "macos")]
-use crate::platform::macos;
+use crate::platform::current;
 
 /// Mouse controller
 #[derive(Debug)]
@@ -133,8 +132,7 @@ impl Mouse {
 }
 impl Actor for Mouse {
     fn event(self, t: InputAction) -> Self {
-        #[cfg(target_os = "macos")]
-        macos::process_event(t, Some(self.position));
+        current::process_event(t, Some(self.position));
         self
     }
 }

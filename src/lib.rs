@@ -16,6 +16,8 @@ extern crate image;
 #[cfg(target_os = "macos")] extern crate core_foundation;
 #[cfg(target_os = "macos")] extern crate core_graphics;
 
+#[cfg(target_os = "windows")] extern crate winapi;
+
 mod action;
 mod actor;
 mod keymap;
@@ -71,8 +73,8 @@ impl AutoGUI {
 
     /// Takes screenshot from all screens and returns them in a Vec
     pub fn screenshot() -> Vec<image::RgbaImage> {
-        #[cfg(target_os = "macos")]
-        platform::macos::screenshot::all_screens()
+        // platform::current::screenshot::all_screens()
+        unimplemented!()
     }
 }
 

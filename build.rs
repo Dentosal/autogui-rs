@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use std::process::Command;
 
 fn link_helpers_macos() {
