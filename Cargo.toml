@@ -13,6 +13,7 @@ build = "build.rs"
 [dependencies]
 libc = "0.2"
 image = "0.18"
+bitflags = "1.0"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-graphics = "0.13.0"

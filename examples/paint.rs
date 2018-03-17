@@ -1,5 +1,4 @@
 use std::f32::consts::PI;
-use std::process::Command;
 use std::time::Duration;
 
 extern crate autogui;
@@ -12,8 +11,9 @@ fn circle_point(p: Position, r: f32, angle: f32) -> Position {
     Position::new(x as u32, y as u32)
 }
 
-fn main() {
-    let gui = AutoGUI::new();
+#[cfg(target_os = "macos")]
+fn open_paint(kbd: autogui::Keyboard) {
+    use std::process::Command;
 
     Command::new("open")
             .arg("-a")
@@ -21,12 +21,29 @@ fn main() {
             .status()
             .expect("failed to execute process");
 
-    gui.keyboard
+    kbd
     .delay(Duration::from_millis(500))
     .press(Key::LeftSuper)
         .tap(Key::N)
         .release(Key::LeftSuper)
     .tap(Key::Return);
+}
+
+#[cfg(target_os = "windows")]
+fn open_paint(kbd: autogui::Keyboard) {
+    kbd
+    .delay(Duration::from_millis(500))
+    .press(Key::LeftSuper)
+        .tap(Key::R)
+        .release(Key::LeftSuper)
+    .write("mspaint")
+    .tap(Key::Return);
+}
+
+fn main() {
+    let gui = AutoGUI::new();
+
+    open_paint(gui.keyboard);
 
     let mut m = gui.mouse.delay(Duration::from_millis(1000));
 

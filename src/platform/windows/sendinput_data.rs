@@ -1,42 +1,59 @@
 #![allow(non_snake_case)]
 
-use std::mem::size_of;
-use winapi::ctypes::{c_long, c_ulong, c_ushort};
+use winapi::ctypes::{c_long, c_ulong};
+use winapi::um::winuser;
+
+use crate::Position;
 
 /// # Win32 MOUSEINPUT
-#[repr(C)]
-struct Win32MouseInput {
-    dx:             c_long,
-    dy:             c_long,
-    mouseData:      c_ulong,
-    dwFlags:        c_ulong,
-    time:           c_ulong,
-    dwExtraInfo:    *const c_ulong
+/// [MSDN docs](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646273(v=vs.85).aspx)
+pub(super) fn new_mouseinput(p: Position, flags: c_ulong, data: c_ulong) -> winuser::MOUSEINPUT {
+    winuser::MOUSEINPUT {
+        dx: p.x as c_long,
+        dy: p.y as c_long,
+        mouseData: data,
+        dwFlags: flags,
+        time: 0 as c_ulong, // use system time
+        dwExtraInfo: 0
+    }
 }
 
 /// # Win32 KEYBDINPUT
-#[repr(C)]
-struct Win32KeyboardInput {
-    wVk:            c_ushort,
-    wScan:          c_ushort,
-    dwFlags:        c_ulong,
-    time:           c_ulong,
-    dwExtraInfo:    *const c_ulong
+/// [MSDN docs](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271(v=vs.85).aspx)
+pub(super) fn new_keyboardinput(keycode: u8, down: bool) -> winuser::KEYBDINPUT {
+    assert!(1 <= keycode && keycode <= 254);
+
+    let mut flags: u32 = 0;
+
+    if !down {
+        flags |= winuser::KEYEVENTF_KEYUP;
+    }
+
+    winuser::KEYBDINPUT {
+        wVk: keycode as u16,
+        wScan: 0,
+        dwFlags: flags,
+        time: 0 as c_ulong, // use system time
+        dwExtraInfo: 0
+    }
 }
 
-/// # Win32 HARDWAREINPUT
-#[repr(C)]
-struct Win32HardwareInput {
-    uMsg:           c_ulong,
-    wParamL:        c_ushort,
-    wParamH:        c_ulong
+bitflags! {
+    pub(super) struct MouseEventF: c_ulong {
+        const XUP             = winuser::MOUSEEVENTF_XUP;
+        const MOVE            = winuser::MOUSEEVENTF_MOVE;
+        const WHEEL           = winuser::MOUSEEVENTF_WHEEL;
+        const XDOWN           = winuser::MOUSEEVENTF_XDOWN;
+        const HWHEEL          = winuser::MOUSEEVENTF_HWHEEL;
+        const LEFTUP          = winuser::MOUSEEVENTF_LEFTUP;
+        const RIGHTUP         = winuser::MOUSEEVENTF_RIGHTUP;
+        const ABSOLUTE        = winuser::MOUSEEVENTF_ABSOLUTE;
+        const LEFTDOWN        = winuser::MOUSEEVENTF_LEFTDOWN;
+        const MIDDLEUP        = winuser::MOUSEEVENTF_MIDDLEUP;
+        const RIGHTDOWN       = winuser::MOUSEEVENTF_RIGHTDOWN;
+        const MIDDLEDOWN      = winuser::MOUSEEVENTF_MIDDLEDOWN;
+        const VIRTUALDESK     = winuser::MOUSEEVENTF_VIRTUALDESK;
+        const MOVE_NOCOALESCE = winuser::MOUSEEVENTF_MOVE_NOCOALESCE;
+    }
 }
 
-/// # Win32 INPUT
-#[repr(C)]
-struct Win32Input {
-    // union, variants:
-    // Win32MouseInput, Win32KeyboardInput, Win32HardwareInput
-    typeTag: c_ulong,
-    data: [u8; size_of::<Win32MouseInput>()] // largest member
-}

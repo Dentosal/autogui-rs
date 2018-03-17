@@ -1,7 +1,24 @@
-use winapi::um::winuser;
-use winapi::ctypes::c_int;
+use std::mem::transmute;
 
+use winapi::ctypes::c_int;
+use winapi::um::winuser;
+
+use super::sendinput_data;
+use super::send_input;
+
+use action::MouseButton;
 use crate::Position;
+
+
+/// # Win32 SendInput wrapper for mouse
+fn send_mouse_event(mi: winuser::MOUSEINPUT) {
+    let u = unsafe {
+        transmute::<winuser::MOUSEINPUT, winuser::INPUT_u>(mi)
+    };
+
+    send_input(winuser::INPUT { type_: 0, u });
+}
+
 
 /// Moves mouse, using Win32 SetCursorPos() function
 pub(super) fn mouse_move(p: Position) {
@@ -12,33 +29,34 @@ pub(super) fn mouse_move(p: Position) {
 }
 
 
-// Mouse down, using Win32
-// pub(super) fb mouse_down(x, y, button) {
+/// Mouse down
+pub(super) fn mouse_down(button: MouseButton, p: Position) {
+    let input_mask = match button {
+        MouseButton::Left   => sendinput_data::MouseEventF::LEFTDOWN,
+        MouseButton::Right  => sendinput_data::MouseEventF::RIGHTDOWN,
+        // MouseButton::Middle => sendinput_data::MouseEventF::MIDDLEDOWN,
+    };
 
-// }
-//     """Send the mouse down event to Windows by calling the mouse_event() win32
-//     function.
-//     Args:
-//       x (int): The x position of the mouse event.
-//       y (int): The y position of the mouse event.
-//       button (str): The mouse button, either 'left', 'middle', or 'right'
-//     Returns:
-//       None
-//     """
-//     if button == 'left':
-//         try:
-//             _sendMouseEvent(MOUSEEVENTF_LEFTDOWN, x, y)
-//         except (PermissionError, OSError): # TODO: We need to figure out how to prevent these errors, see https://github.com/asweigart/pyautogui/issues/60
-//             pass
-//     elif button == 'middle':
-//         try:
-//             _sendMouseEvent(MOUSEEVENTF_MIDDLEDOWN, x, y)
-//         except (PermissionError, OSError): # TODO: We need to figure out how to prevent these errors, see https://github.com/asweigart/pyautogui/issues/60
-//             pass
-//     elif button == 'right':
-//         try:
-//             _sendMouseEvent(MOUSEEVENTF_RIGHTDOWN, x, y)
-//         except (PermissionError, OSError): # TODO: We need to figure out how to prevent these errors, see https://github.com/asweigart/pyautogui/issues/60
-//             pass
-//     else:
-//         assert False, "button argument not in ('left', 'middle', 'right')"
+    let mi = sendinput_data::new_mouseinput(p, input_mask.bits(), 0);
+    send_mouse_event(mi)
+}
+
+/// Mouse up
+pub(super) fn mouse_up(button: MouseButton, p: Position) {
+    let input_mask = match button {
+        MouseButton::Left   => sendinput_data::MouseEventF::LEFTUP,
+        MouseButton::Right  => sendinput_data::MouseEventF::RIGHTUP,
+        // MouseButton::Middle => sendinput_data::MouseEventF::MIDDLEUP,
+    };
+
+    let mi = sendinput_data::new_mouseinput(p, input_mask.bits(), 0);
+    send_mouse_event(mi)
+}
+
+/// Mouse multiple clicks
+pub(super) fn mouse_n_click(button: MouseButton, p: Position, n: u8) {
+    for _ in 0..n {
+        mouse_down(button, p);
+        mouse_up(button, p);
+    }
+}

@@ -4,7 +4,6 @@
 // enforce proper style
 #![warn(unused_import_braces)]
 #![warn(missing_docs)]
-#![deny(trivial_casts, trivial_numeric_casts)]
 #![deny(unreachable_patterns)]
 
 #![feature(crate_in_paths)]
@@ -12,6 +11,9 @@
 
 extern crate libc;
 extern crate image;
+
+#[macro_use]
+extern crate bitflags;
 
 #[cfg(target_os = "macos")] extern crate core_foundation;
 #[cfg(target_os = "macos")] extern crate core_graphics;

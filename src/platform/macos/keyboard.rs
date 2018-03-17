@@ -1,10 +1,10 @@
 use core_graphics::event_source::{CGEventSource, CGEventSourceStateID};
 use core_graphics::event::{CGEvent, CGKeyCode};
 
-use crate::keymap::Key;
+use crate::keymap::{Key, Modifiers};
 
 use super::post_event;
-use super::keymap::{convert, Modifiers};
+use super::keymap::convert;
 
 fn post_keyboard_event(keycode: CGKeyCode, keydown: bool) {
     // https://developer.apple.com/documentation/coregraphics/cgevent/1454356-init
@@ -16,14 +16,11 @@ fn post_keyboard_event(keycode: CGKeyCode, keydown: bool) {
 }
 
 fn send_key(keycode: CGKeyCode, modifiers: Modifiers, keydown: bool) {
-    let shift = (modifiers & 0b01) != 0;
-    let alt   = (modifiers & 0b10) != 0;
-
     if keydown {
-        if shift {
+        if modifiers.contains(Modifiers::SHIFT) {
             post_keyboard_event(convert(Key::LeftShift).unwrap().0, true);
         }
-        if alt {
+        if modifiers.contains(Modifiers::ALT) {
             post_keyboard_event(convert(Key::LeftAlt).unwrap().0, true);
         }
     }
@@ -31,10 +28,10 @@ fn send_key(keycode: CGKeyCode, modifiers: Modifiers, keydown: bool) {
     post_keyboard_event(keycode, keydown);
 
     if !keydown {
-        if shift {
+        if modifiers.contains(Modifiers::SHIFT) {
             post_keyboard_event(convert(Key::LeftShift).unwrap().0, false);
         }
-        if alt {
+        if modifiers.contains(Modifiers::ALT) {
             post_keyboard_event(convert(Key::LeftAlt).unwrap().0, false);
         }
     }

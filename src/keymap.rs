@@ -1,3 +1,12 @@
+bitflags! {
+    pub(crate) struct Modifiers: u8 {
+        const CTRL  = 0b0001;
+        const SHIFT = 0b0010;
+        const ALT   = 0b0100;
+    }
+}
+
+
 /// A non-virtual key code (e.g. Key::A produces "A")
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy)]
@@ -50,7 +59,8 @@ pub enum Key {
     Insert,
     Home, End,
     PageUp, PageDown,
-    F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20,
+    F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+    F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24,
     NumLock, CapsLock, ScrolLock,
     LeftShift,  RightShift,
     LeftCtrl,   RightCtrl,
