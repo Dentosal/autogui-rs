@@ -95,6 +95,7 @@ pub(super) fn convert(key: Key) -> Option<(u8, Modifiers)> {
         Key::RightShift     => Some((winuser::VK_RSHIFT,        Modifiers::empty())),
         Key::LeftCtrl       => Some((winuser::VK_LCONTROL,      Modifiers::empty())),
         Key::RightCtrl      => Some((winuser::VK_RCONTROL,      Modifiers::empty())),
+        Key::LeftAlt        => Some((winuser::VK_MENU,          Modifiers::empty())),
         Key::VolumeMute	    => Some((winuser::VK_VOLUME_MUTE,   Modifiers::empty())),
         Key::VolumeDown  	=> Some((winuser::VK_VOLUME_DOWN,   Modifiers::empty())),
         Key::VolumeUp       => Some((winuser::VK_VOLUME_UP,     Modifiers::empty())),

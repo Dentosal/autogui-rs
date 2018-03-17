@@ -9,9 +9,9 @@ use super::keymap::convert;
 use crate::keymap::{Key, Modifiers};
 
 /// # Win32 SendInput wrapper for keyboard
-fn send_keyboard_event(mi: winuser::KEYBDINPUT) {
+fn send_keyboard_event(ki: winuser::KEYBDINPUT) {
     let u = unsafe {
-        transmute_copy::<winuser::KEYBDINPUT, winuser::INPUT_u>(&mi)
+        transmute_copy::<winuser::KEYBDINPUT, winuser::INPUT_u>(&ki)
     };
     send_input(winuser::INPUT { type_: 1, u });
 }
@@ -30,8 +30,8 @@ pub(super) fn keyboard_event(key: Key, keydown: bool) {
                 keyboard_event(Key::LeftAlt, true);
             }
 
-            let mi = sendinput_data::new_keyboardinput(keycode, keydown);
-            send_keyboard_event(mi);
+            let ki = sendinput_data::new_keyboardinput(keycode, keydown);
+            send_keyboard_event(ki);
 
             if modifiers.contains(Modifiers::CTRL) {
                 keyboard_event(Key::LeftCtrl, false);
@@ -46,4 +46,9 @@ pub(super) fn keyboard_event(key: Key, keydown: bool) {
         },
         None => panic!("Unknown key: {:?}", key)
     };
+}
+
+pub(super) fn keyboard_event_char(c: char, keydown: bool) {
+    let ki = sendinput_data::new_keyboardinput_unicode(c, keydown);
+    send_keyboard_event(ki);
 }

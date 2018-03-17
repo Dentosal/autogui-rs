@@ -7,7 +7,10 @@ bitflags! {
 }
 
 
-/// A non-virtual key code (e.g. Key::A produces "A")
+/// Non-virtual key code (e.g. Key::A produces "A")
+/// Only the most useful keys are included here.
+/// They should allow using hotkeys etc.
+/// For typing text, use [Keyboard::write](struct.Keyboard.html#method.write).
 #[allow(missing_docs)]
 #[derive(Debug, Clone, Copy)]
 pub enum Key {
@@ -179,6 +182,7 @@ impl Key {
         assert!(!c.is_ascii_uppercase());
 
         match c {
+            '\n'=> Some(Key::Return),
             '\t'=> Some(Key::Tab),
             ' ' => Some(Key::Space),
             '!' => Some(Key::Exclaim),

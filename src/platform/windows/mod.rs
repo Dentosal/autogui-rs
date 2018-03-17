@@ -19,7 +19,7 @@ mod keymap;
 // pub mod screenshot;
 
 use self::mouse::{mouse_move, mouse_up, mouse_down, mouse_n_click};
-use self::keyboard::keyboard_event;
+use self::keyboard::{keyboard_event, keyboard_event_char};
 
 fn send_input(input: winuser::INPUT) {
     let event_count = unsafe {
@@ -49,5 +49,7 @@ pub(crate) fn process_event(a: InputAction, p: Option<Position>) {
         MouseClickN(button, n)  => mouse_n_click(button, p.expect(P_REQUIRED), n),
         KeyUp(key)              => keyboard_event(key, false),
         KeyDown(key)            => keyboard_event(key, true),
+        CharKeyUp(c)            => keyboard_event_char(c, false),
+        CharKeyDown(c)          => keyboard_event_char(c, true),
     }
 }

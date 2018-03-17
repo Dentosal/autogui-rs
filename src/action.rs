@@ -18,6 +18,8 @@ pub(crate) enum InputAction {
 
     KeyDown(Key),
     KeyUp(Key),
+    CharKeyDown(char),
+    CharKeyUp(char),
 }
 
 /// Mouse buttons

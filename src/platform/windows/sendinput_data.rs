@@ -18,7 +18,7 @@ pub(super) fn new_mouseinput(p: Position, flags: c_ulong, data: c_ulong) -> winu
     }
 }
 
-/// # Win32 KEYBDINPUT
+/// # Win32 KEYBDINPUT with keycode
 /// [MSDN docs](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271(v=vs.85).aspx)
 pub(super) fn new_keyboardinput(keycode: u8, down: bool) -> winuser::KEYBDINPUT {
     assert!(1 <= keycode && keycode <= 254);
@@ -37,6 +37,27 @@ pub(super) fn new_keyboardinput(keycode: u8, down: bool) -> winuser::KEYBDINPUT 
         dwExtraInfo: 0
     }
 }
+
+/// # Win32 KEYBDINPUT with unicode char
+/// [MSDN docs](https://msdn.microsoft.com/en-us/library/windows/desktop/ms646271(v=vs.85).aspx)
+pub(super) fn new_keyboardinput_unicode(c: char, down: bool) -> winuser::KEYBDINPUT {
+    assert!(c as u32 == c as u32 as u16 as u32);
+
+    let mut flags: u32 = winuser::KEYEVENTF_UNICODE;
+
+    if !down {
+        flags |= winuser::KEYEVENTF_KEYUP;
+    }
+
+    winuser::KEYBDINPUT {
+        wVk: 0,
+        wScan: c as u32 as u16,
+        dwFlags: flags,
+        time: 0 as c_ulong, // use system time
+        dwExtraInfo: 0
+    }
+}
+
 
 bitflags! {
     pub(super) struct MouseEventF: c_ulong {

@@ -27,24 +27,18 @@ impl Keyboard {
         .event(action::InputAction::KeyUp(key))
     }
 
+    /// Write a char using keyboard
+    pub fn write_char(self, c: char) -> Keyboard {
+        self
+        .event(action::InputAction::CharKeyDown(c))
+        .event(action::InputAction::CharKeyUp(c))
+    }
+
     /// Write a string
     pub fn write(mut self, s: &str) -> Keyboard {
         for c in s.chars() {
-            let shift = c.is_ascii_uppercase();
-            let lookup_c: char = if shift { c.to_ascii_lowercase() } else { c };
-            let k = Key::from_char(lookup_c).expect(&format!("Could not type '{}': unknown key", c));
-
-            if shift {
-                self = self.press(Key::LeftShift);
-            }
-
-            self = self.tap(k);
-
-            if shift {
-                self = self.release(Key::LeftShift);
-            }
+            self = self.write_char(c);
         }
-
         self
     }
 }
