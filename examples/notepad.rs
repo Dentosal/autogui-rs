@@ -4,15 +4,12 @@ extern crate autogui;
 use autogui::{AutoGUI, Key};
 use autogui::ChainedAction;
 
-// broken: |{}éÄäÖöÅå
-
 const TEXT: &'static str = "Unicode supprt?
 Ääkkönen, Café, über, 1000€, «ταБЬℓσ»
 Naïve unicode support?
 Nôpè: ☃☂♚ ٩(-̮̮̃-̃)۶ ٩(●̮̮̃•̃)۶ ٩(͡๏̯͡๏)۶ ٩(-̮̮̃•̃).
 Flip: (╯°□°）╯︵ ┻━┻
 ";
-
 
 #[cfg(target_os = "windows")]
 fn open_notepad(kbd: autogui::Keyboard) -> autogui::Keyboard {
