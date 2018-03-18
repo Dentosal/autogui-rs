@@ -48,6 +48,7 @@ pub(super) fn keyboard_event(key: Key, keydown: bool) {
     };
 }
 
+/// Unicode char pseudokey up or down
 pub(super) fn keyboard_event_char(c: char, keydown: bool) {
     let ki = sendinput_data::new_keyboardinput_unicode(c, keydown);
     send_keyboard_event(ki);

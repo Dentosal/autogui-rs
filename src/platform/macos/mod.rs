@@ -44,5 +44,7 @@ pub(crate) fn process_event(a: InputAction, p: Option<Position>) {
         InputAction::MouseClickN(button, n)  => mouse_n_click(button, point.expect(P_REQUIRED), n),
         InputAction::KeyUp(key)              => keyboard::keyboard_event(key, false),
         InputAction::KeyDown(key)            => keyboard::keyboard_event(key, true),
+        InputAction::CharKeyUp(key)          => keyboard::keyboard_event_char(key, false),
+        InputAction::CharKeyDown(key)        => keyboard::keyboard_event_char(key, true),
     }
 }

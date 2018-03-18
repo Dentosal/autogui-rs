@@ -17,6 +17,9 @@ fn post_keyboard_event(keycode: CGKeyCode, keydown: bool) {
 
 fn send_key(keycode: CGKeyCode, modifiers: Modifiers, keydown: bool) {
     if keydown {
+        if modifiers.contains(Modifiers::CTRL) {
+            post_keyboard_event(convert(Key::LeftCtrl).unwrap().0, true);
+        }
         if modifiers.contains(Modifiers::SHIFT) {
             post_keyboard_event(convert(Key::LeftShift).unwrap().0, true);
         }
@@ -28,6 +31,9 @@ fn send_key(keycode: CGKeyCode, modifiers: Modifiers, keydown: bool) {
     post_keyboard_event(keycode, keydown);
 
     if !keydown {
+        if modifiers.contains(Modifiers::CTRL) {
+            post_keyboard_event(convert(Key::LeftCtrl).unwrap().0, false);
+        }
         if modifiers.contains(Modifiers::SHIFT) {
             post_keyboard_event(convert(Key::LeftShift).unwrap().0, false);
         }
@@ -44,4 +50,17 @@ pub(super) fn keyboard_event(key: Key, keydown: bool) {
         },
         None => panic!("Unknown key: {:?}", key)
     };
+}
+
+
+/// Unicode char pseudokey up or down
+pub(super) fn keyboard_event_char(c: char, keydown: bool) {
+    let ev = CGEvent::new_keyboard_event(
+        CGEventSource::new(CGEventSourceStateID::HIDSystemState).unwrap(),
+        0,
+        keydown
+    ).unwrap();
+
+    ev.set_string(&c.to_string());
+    post_event(ev);
 }

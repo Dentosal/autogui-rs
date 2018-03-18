@@ -11,6 +11,21 @@ Nôpè: ☃☂♚ ٩(-̮̮̃-̃)۶ ٩(●̮̮̃•̃)۶ ٩(͡๏̯͡๏)۶ ٩(-�
 Flip: (╯°□°）╯︵ ┻━┻
 ";
 
+#[cfg(target_os = "macos")]
+fn open_notepad(kbd: autogui::Keyboard) -> autogui::Keyboard {
+    kbd
+    .delay(Duration::from_millis(500))
+    .press(Key::LeftSuper)
+        .tap(Key::Space)
+        .release(Key::LeftSuper)
+    .write("textedit")
+    .tap(Key::Return)
+    .delay(Duration::from_millis(1000))
+    .press(Key::LeftSuper)
+        .tap(Key::N)
+        .release(Key::LeftSuper)
+}
+
 #[cfg(target_os = "windows")]
 fn open_notepad(kbd: autogui::Keyboard) -> autogui::Keyboard {
     kbd
