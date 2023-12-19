@@ -5,9 +5,7 @@
 #![warn(unused_import_braces)]
 #![warn(missing_docs)]
 #![deny(unreachable_patterns)]
-
-#![feature(crate_in_paths)]
-#![feature(slice_patterns)]
+#![deny(unused_must_use)]
 
 extern crate libc;
 extern crate image;
