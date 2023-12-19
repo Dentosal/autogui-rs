@@ -1,16 +1,26 @@
+use std::{sync::Once, ffi::{CString, c_char}};
+
 use core_graphics::event::CGKeyCode;
 
 use keymap::{Key, Modifiers};
 
 #[link(name = "keycode", kind = "static")]
 extern {
-    fn keyCodeForChar(c: u32) -> u32;
+    fn initialize();
+    fn get_special(name: *const c_char) -> u16;
+    fn get_character(c: u16) -> u32;
 }
+
+static INIT_ONCE: Once = Once::new();
 
 fn translate(c: char) -> Option<(CGKeyCode, Modifiers)> {
     let result = unsafe {
-        keyCodeForChar(c as u32)
+        get_character(c as u16)
     };
+
+    if result == u32::MAX {
+        return None;
+    }
 
     let keycode: u16 = (result & 0xffff) as u16;
     let keymods: u8 = (result >> 16) as u8;
@@ -32,62 +42,61 @@ fn translate(c: char) -> Option<(CGKeyCode, Modifiers)> {
     }
 }
 
+fn special_by_name(name: &str) -> Option<CGKeyCode> {
+    let s = CString::new(name.to_ascii_lowercase()).unwrap();
+    let raw_s = s.into_raw();
+    let raw = unsafe {
+        get_special(raw_s)
+    };
+    unsafe {
+        drop(CString::from_raw(raw_s));
+    }
+
+    if raw == u16::MAX {
+        None
+    } else {
+        Some(raw)
+    }
+}
+
+include!(concat!(env!("CARGO_MANIFEST_DIR"), "/target/macos_fixed_keycodes.rs"));
+
 pub(super) fn convert(key: Key) -> Option<(CGKeyCode, Modifiers)> {
+    INIT_ONCE.call_once(|| {
+        unsafe {
+            initialize();
+        }
+    });
+
+    // First try to resolve character-producing keys
     if let Some(c) = key.to_char() {
         if let Some(t) = translate(c) {
             return Some(t);
         }
     }
 
-    match key {
-        Key::Return         => Some((0x24, Modifiers::empty())),
-        Key::Tab            => Some((0x30, Modifiers::empty())),
-        Key::Space          => Some((0x31, Modifiers::empty())),
-        Key::Backspace      => Some((0x33, Modifiers::empty())),
-        Key::Escape         => Some((0x35, Modifiers::empty())),
-        Key::LeftSuper      => Some((0x37, Modifiers::empty())),
-        Key::LeftShift      => Some((0x38, Modifiers::empty())),
-        Key::CapsLock       => Some((0x39, Modifiers::empty())),
-        Key::LeftAlt        => Some((0x3A, Modifiers::empty())),
-        Key::LeftCtrl       => Some((0x3B, Modifiers::empty())),
-        Key::RightSuper     => Some((0x36, Modifiers::empty())),
-        Key::RightShift     => Some((0x3C, Modifiers::empty())),
-        Key::RightAlt       => Some((0x3D, Modifiers::empty())),
-        Key::RightCtrl      => Some((0x3E, Modifiers::empty())),
-        Key::Fn             => Some((0x3F, Modifiers::empty())),
-        Key::VolumeUp       => Some((0x48, Modifiers::empty())),
-        Key::VolumeDown     => Some((0x49, Modifiers::empty())),
-        Key::VolumeMute     => Some((0x4A, Modifiers::empty())),
-        Key::F1             => Some((0x7A, Modifiers::empty())),
-        Key::F2             => Some((0x78, Modifiers::empty())),
-        Key::F3             => Some((0x63, Modifiers::empty())),
-        Key::F4             => Some((0x76, Modifiers::empty())),
-        Key::F5             => Some((0x60, Modifiers::empty())),
-        Key::F6             => Some((0x61, Modifiers::empty())),
-        Key::F7             => Some((0x62, Modifiers::empty())),
-        Key::F8             => Some((0x64, Modifiers::empty())),
-        Key::F9             => Some((0x65, Modifiers::empty())),
-        Key::F10            => Some((0x6D, Modifiers::empty())),
-        Key::F11            => Some((0x67, Modifiers::empty())),
-        Key::F12            => Some((0x6F, Modifiers::empty())),
-        Key::F13            => Some((0x69, Modifiers::empty())),
-        Key::F14            => Some((0x6B, Modifiers::empty())),
-        Key::F15            => Some((0x71, Modifiers::empty())),
-        Key::F16            => Some((0x6A, Modifiers::empty())),
-        Key::F17            => Some((0x40, Modifiers::empty())),
-        Key::F18            => Some((0x4F, Modifiers::empty())),
-        Key::F19            => Some((0x50, Modifiers::empty())),
-        Key::F20            => Some((0x5A, Modifiers::empty())),
-        Key::Help           => Some((0x72, Modifiers::empty())),
-        Key::Home           => Some((0x73, Modifiers::empty())),
-        Key::PageUp         => Some((0x74, Modifiers::empty())),
-        Key::Delete         => Some((0x75, Modifiers::empty())),
-        Key::End            => Some((0x77, Modifiers::empty())),
-        Key::PageDown       => Some((0x79, Modifiers::empty())),
-        Key::ArrowLeft      => Some((0x7B, Modifiers::empty())),
-        Key::ArrowRight     => Some((0x7C, Modifiers::empty())),
-        Key::ArrowDown      => Some((0x7D, Modifiers::empty())),
-        Key::ArrowUp        => Some((0x7E, Modifiers::empty())),
-        _                   => None
+    // Next fixed keys that are same for all layouts
+    let name = format!("{key:?}");
+    if let Some(ok) = get_fixed_keycode(&match key {
+        Key::Backspace  => "Delete",
+        Key::Delete     => "ForwardDelete",
+        Key::LeftCtrl   => "Control",
+        Key::RightCtrl  => "RightControl",
+        Key::LeftShift  => "Shift",
+        Key::RightShift => "RightShift",
+        Key::LeftAlt    => "Option",
+        Key::RightAlt   => "RightOption",
+        Key::LeftSuper  => "Command",
+        Key::RightSuper => "RightCommand",
+        Key::ArrowLeft  => "LeftArrow",
+        Key::ArrowRight => "RightArrow",
+        Key::ArrowDown  => "DownArrow",
+        Key::ArrowUp    => "UpArrow",
+        _ => &name // default
+    }) {
+        return Some((ok, Modifiers::empty()));
     }
+
+    // Then lastly, try to resolve special keys using Swift-based helper
+    Some((special_by_name(&name)?, Modifiers::empty()))
 }
