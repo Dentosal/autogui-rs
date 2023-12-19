@@ -1,5 +1,5 @@
-use actor::{Actor, ChainedAction};
 use action;
+use actor::{Actor, ChainedAction};
 use keymap::Key;
 
 /// Keyboard controller
@@ -22,16 +22,14 @@ impl Keyboard {
 
     /// Press and release key
     pub fn tap(self, key: Key) -> Keyboard {
-        self
-        .event(action::InputAction::KeyDown(key))
-        .event(action::InputAction::KeyUp(key))
+        self.event(action::InputAction::KeyDown(key))
+            .event(action::InputAction::KeyUp(key))
     }
 
     /// Write a char using keyboard
     pub fn write_char(self, c: char) -> Keyboard {
-        self
-        .event(action::InputAction::CharKeyDown(c))
-        .event(action::InputAction::CharKeyUp(c))
+        self.event(action::InputAction::CharKeyDown(c))
+            .event(action::InputAction::CharKeyUp(c))
     }
 
     /// Write a string

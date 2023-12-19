@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::{env, process::Command, fs, path::PathBuf};
+use std::{env, fs, path::PathBuf, process::Command};
 
 fn link_helpers_macos() {
     println!("cargo:rerun-if-changed=platform_helpers/macos/Sources/Keycode/Keycode.swift");
@@ -11,11 +11,16 @@ fn link_helpers_macos() {
     let root_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
 
     // Compile the swift library
-    let status = Command::new("swift").args(&[
-        "build",
-        "--package-path", "platform_helpers/macos/",
-        "-c", &profile,
-    ]).status().unwrap();
+    let status = Command::new("swift")
+        .args(&[
+            "build",
+            "--package-path",
+            "platform_helpers/macos/",
+            "-c",
+            &profile,
+        ])
+        .status()
+        .unwrap();
 
     assert!(status.success());
 
@@ -32,19 +37,21 @@ fn link_helpers_macos() {
 
     // Add linker args
     let target_info = Command::new("swift")
-            .arg("-print-target-info")
-            .output()
-            .unwrap()
-            .stdout;
+        .arg("-print-target-info")
+        .output()
+        .unwrap()
+        .stdout;
     let swift_env: serde_json::Value = serde_json::from_slice(&target_info).unwrap();
-    for path in swift_env["paths"]["runtimeLibraryPaths"].as_array().unwrap() {
+    for path in swift_env["paths"]["runtimeLibraryPaths"]
+        .as_array()
+        .unwrap()
+    {
         println!("cargo:rustc-link-search=native={}", path.as_str().unwrap());
     }
 
     println!("cargo:rustc-link-search=native=target");
     println!("cargo:rustc-link-lib=static=keycode");
 }
-
 
 fn codegen_keycodes_macos() {
     let contents = fs::read("/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Carbon.framework/Versions/A/Frameworks/HIToolbox.framework/Versions/A/Headers/Events.h").expect("missing Events.h");

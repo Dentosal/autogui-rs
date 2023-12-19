@@ -2,17 +2,15 @@ use std::mem::transmute_copy;
 
 use winapi::um::winuser;
 
-use super::sendinput_data;
-use super::send_input;
 use super::keymap::convert;
+use super::send_input;
+use super::sendinput_data;
 
 use crate::keymap::{Key, Modifiers};
 
 /// # Win32 SendInput wrapper for keyboard
 fn send_keyboard_event(ki: winuser::KEYBDINPUT) {
-    let u = unsafe {
-        transmute_copy::<winuser::KEYBDINPUT, winuser::INPUT_u>(&ki)
-    };
+    let u = unsafe { transmute_copy::<winuser::KEYBDINPUT, winuser::INPUT_u>(&ki) };
     send_input(winuser::INPUT { type_: 1, u });
 }
 
@@ -42,9 +40,8 @@ pub(super) fn keyboard_event(key: Key, keydown: bool) {
             if modifiers.contains(Modifiers::ALT) {
                 keyboard_event(Key::LeftAlt, false);
             }
-
-        },
-        None => panic!("Unknown key: {:?}", key)
+        }
+        None => panic!("Unknown key: {:?}", key),
     };
 }
 

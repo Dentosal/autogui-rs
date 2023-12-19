@@ -12,15 +12,19 @@ pub fn all_screens() -> Vec<image::RgbaImage> {
         let w: u32 = img.width() as u32;
         let h: u32 = img.height() as u32;
 
-        let data: Vec<u8> = img.data().bytes().chunks(4).flat_map(|chunk| {
-            // reorder color components
-            if let &[b, g, r, a] = chunk {
-                vec![r, g, b, a]
-            }
-            else {
-                unreachable!()
-            }
-        }).collect();
+        let data: Vec<u8> = img
+            .data()
+            .bytes()
+            .chunks(4)
+            .flat_map(|chunk| {
+                // reorder color components
+                if let &[b, g, r, a] = chunk {
+                    vec![r, g, b, a]
+                } else {
+                    unreachable!()
+                }
+            })
+            .collect();
 
         result.push(image::ImageBuffer::from_raw(w, h, data).unwrap());
     }

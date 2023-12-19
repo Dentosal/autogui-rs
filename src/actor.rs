@@ -6,7 +6,10 @@ use action::InputAction;
 
 use crate::platform;
 
-pub(crate) trait Actor where Self: Sized {
+pub(crate) trait Actor
+where
+    Self: Sized,
+{
     fn event(self, t: InputAction) -> Self {
         platform::current::process_event(t, None);
         self
@@ -14,7 +17,10 @@ pub(crate) trait Actor where Self: Sized {
 }
 
 /// Methods to help working with chained actions
-pub trait ChainedAction where Self: Sized {
+pub trait ChainedAction
+where
+    Self: Sized,
+{
     /// Sleeps given amount of time
     fn delay(self, d: Duration) -> Self {
         sleep(d);

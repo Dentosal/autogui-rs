@@ -1,11 +1,11 @@
 #![feature(inclusive_range_syntax)]
 
 extern crate autogui;
-use autogui::{AutoGUI, Position, Key};
+use autogui::{AutoGUI, Key, Position};
 
 use std::path::Path;
-use std::time::Duration;
 use std::thread::sleep;
+use std::time::Duration;
 
 fn main() {
     let gui = AutoGUI::new();
@@ -13,7 +13,9 @@ fn main() {
     let mut m = gui.mouse;
     let mut k = gui.keyboard;
 
-    m = m.at(Position::new(1370, 70)).drag_to(Position::new(1370, 200));
+    m = m
+        .at(Position::new(1370, 70))
+        .drag_to(Position::new(1370, 200));
     m.at(Position::new(80, 80)).doubleclick();
 
     for (i, s) in AutoGUI::screenshot().iter().enumerate() {

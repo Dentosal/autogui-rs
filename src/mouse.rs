@@ -10,7 +10,7 @@ use crate::platform::current;
 #[derive(Debug)]
 pub struct Mouse {
     position: Position,
-    actual_position: Position
+    actual_position: Position,
 }
 impl Mouse {
     pub(crate) fn new() -> Mouse {
@@ -31,22 +31,24 @@ impl Mouse {
         if !self.is_placed() {
             let p = self.position;
             self.move_to(p)
-        }
-        else {
+        } else {
             self
         }
     }
 
     /// Perform next event at given position
     pub fn at(self, new_pos: Position) -> Mouse {
-        Mouse { position: new_pos, ..self }
+        Mouse {
+            position: new_pos,
+            ..self
+        }
     }
 
     /// Move mouse to new position
     pub fn move_to(self, new_pos: Position) -> Mouse {
         let mouse = Mouse {
             position: new_pos,
-            actual_position: new_pos
+            actual_position: new_pos,
         };
 
         mouse.event(action::InputAction::MouseMove)
@@ -72,12 +74,11 @@ impl Mouse {
         let start_pos = self.position;
 
         // drag end
-        self
-        .move_to(start_pos)
-        .down(button)
-        .at(new_pos)
-        .event(action::InputAction::MouseDrag(button))
-        .up(button)
+        self.move_to(start_pos)
+            .down(button)
+            .at(new_pos)
+            .event(action::InputAction::MouseDrag(button))
+            .up(button)
     }
 
     /// Press the given mouse button down

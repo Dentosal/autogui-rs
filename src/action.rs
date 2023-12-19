@@ -4,7 +4,6 @@ use keymap::Key;
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum InputAction {
     // mouse
-
     MouseUp(MouseButton),
     MouseDown(MouseButton),
 
@@ -15,7 +14,6 @@ pub(crate) enum InputAction {
     // ScrollWheel, // TODO: add support
 
     // keyboard
-
     KeyDown(Key),
     KeyUp(Key),
     CharKeyDown(char),

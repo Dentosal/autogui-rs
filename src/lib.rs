@@ -7,28 +7,31 @@
 #![deny(unreachable_patterns)]
 #![deny(unused_must_use)]
 
-extern crate libc;
 extern crate image;
+extern crate libc;
 
 #[macro_use]
 extern crate bitflags;
 
-#[cfg(target_os = "macos")] extern crate core_foundation;
-#[cfg(target_os = "macos")] extern crate core_graphics;
+#[cfg(target_os = "macos")]
+extern crate core_foundation;
+#[cfg(target_os = "macos")]
+extern crate core_graphics;
 
-#[cfg(target_os = "windows")] extern crate winapi;
+#[cfg(target_os = "windows")]
+extern crate winapi;
 
 mod action;
 mod actor;
+mod keyboard;
 mod keymap;
 mod mouse;
-mod keyboard;
 mod platform;
 
-pub use keymap::Key;
 pub use action::MouseButton;
-pub use mouse::Mouse;
 pub use keyboard::Keyboard;
+pub use keymap::Key;
+pub use mouse::Mouse;
 
 pub use actor::ChainedAction;
 
@@ -38,7 +41,7 @@ pub struct Position {
     /// X axis
     pub x: u32,
     /// Y axis
-    pub y: u32
+    pub y: u32,
 }
 impl Position {
     /// Creates new Position
@@ -52,7 +55,6 @@ impl Position {
         ((dx + dy) as f32).sqrt().round() as u32
     }
 }
-
 
 /// Collection of GUI automation tools
 pub struct AutoGUI {

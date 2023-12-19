@@ -1,11 +1,14 @@
-use std::{sync::Once, ffi::{CString, c_char}};
+use std::{
+    ffi::{c_char, CString},
+    sync::Once,
+};
 
 use core_graphics::event::CGKeyCode;
 
 use keymap::{Key, Modifiers};
 
 #[link(name = "keycode", kind = "static")]
-extern {
+extern "C" {
     fn initialize();
     fn get_special(name: *const c_char) -> u16;
     fn get_character(c: u16) -> u32;
@@ -14,9 +17,7 @@ extern {
 static INIT_ONCE: Once = Once::new();
 
 fn translate(c: char) -> Option<(CGKeyCode, Modifiers)> {
-    let result = unsafe {
-        get_character(c as u16)
-    };
+    let result = unsafe { get_character(c as u16) };
 
     if result == u32::MAX {
         return None;
@@ -36,8 +37,7 @@ fn translate(c: char) -> Option<(CGKeyCode, Modifiers)> {
 
     if keycode != 0xffff {
         Some((keycode, modifiers))
-    }
-    else {
+    } else {
         None
     }
 }
@@ -45,9 +45,7 @@ fn translate(c: char) -> Option<(CGKeyCode, Modifiers)> {
 fn special_by_name(name: &str) -> Option<CGKeyCode> {
     let s = CString::new(name.to_ascii_lowercase()).unwrap();
     let raw_s = s.into_raw();
-    let raw = unsafe {
-        get_special(raw_s)
-    };
+    let raw = unsafe { get_special(raw_s) };
     unsafe {
         drop(CString::from_raw(raw_s));
     }
@@ -59,13 +57,14 @@ fn special_by_name(name: &str) -> Option<CGKeyCode> {
     }
 }
 
-include!(concat!(env!("CARGO_MANIFEST_DIR"), "/target/macos_fixed_keycodes.rs"));
+include!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/target/macos_fixed_keycodes.rs"
+));
 
 pub(super) fn convert(key: Key) -> Option<(CGKeyCode, Modifiers)> {
-    INIT_ONCE.call_once(|| {
-        unsafe {
-            initialize();
-        }
+    INIT_ONCE.call_once(|| unsafe {
+        initialize();
     });
 
     // First try to resolve character-producing keys
@@ -78,21 +77,21 @@ pub(super) fn convert(key: Key) -> Option<(CGKeyCode, Modifiers)> {
     // Next fixed keys that are same for all layouts
     let name = format!("{key:?}");
     if let Some(ok) = get_fixed_keycode(&match key {
-        Key::Backspace  => "Delete",
-        Key::Delete     => "ForwardDelete",
-        Key::LeftCtrl   => "Control",
-        Key::RightCtrl  => "RightControl",
-        Key::LeftShift  => "Shift",
+        Key::Backspace => "Delete",
+        Key::Delete => "ForwardDelete",
+        Key::LeftCtrl => "Control",
+        Key::RightCtrl => "RightControl",
+        Key::LeftShift => "Shift",
         Key::RightShift => "RightShift",
-        Key::LeftAlt    => "Option",
-        Key::RightAlt   => "RightOption",
-        Key::LeftSuper  => "Command",
+        Key::LeftAlt => "Option",
+        Key::RightAlt => "RightOption",
+        Key::LeftSuper => "Command",
         Key::RightSuper => "RightCommand",
-        Key::ArrowLeft  => "LeftArrow",
+        Key::ArrowLeft => "LeftArrow",
         Key::ArrowRight => "RightArrow",
-        Key::ArrowDown  => "DownArrow",
-        Key::ArrowUp    => "UpArrow",
-        _ => &name // default
+        Key::ArrowDown => "DownArrow",
+        Key::ArrowUp => "UpArrow",
+        _ => &name, // default
     }) {
         return Some((ok, Modifiers::empty()));
     }

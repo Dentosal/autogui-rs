@@ -14,7 +14,7 @@ pub(super) fn new_mouseinput(p: Position, flags: c_ulong, data: c_ulong) -> winu
         mouseData: data,
         dwFlags: flags,
         time: 0 as c_ulong, // use system time
-        dwExtraInfo: 0
+        dwExtraInfo: 0,
     }
 }
 
@@ -34,7 +34,7 @@ pub(super) fn new_keyboardinput(keycode: u8, down: bool) -> winuser::KEYBDINPUT 
         wScan: 0,
         dwFlags: flags,
         time: 0 as c_ulong, // use system time
-        dwExtraInfo: 0
+        dwExtraInfo: 0,
     }
 }
 
@@ -54,10 +54,9 @@ pub(super) fn new_keyboardinput_unicode(c: char, down: bool) -> winuser::KEYBDIN
         wScan: c as u32 as u16,
         dwFlags: flags,
         time: 0 as c_ulong, // use system time
-        dwExtraInfo: 0
+        dwExtraInfo: 0,
     }
 }
-
 
 bitflags! {
     pub(super) struct MouseEventF: c_ulong {
@@ -77,4 +76,3 @@ bitflags! {
         const MOVE_NOCOALESCE = winuser::MOUSEEVENTF_MOVE_NOCOALESCE;
     }
 }
-

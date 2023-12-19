@@ -1,8 +1,8 @@
 use std::time::Duration;
 
 extern crate autogui;
-use autogui::{AutoGUI, Key};
 use autogui::ChainedAction;
+use autogui::{AutoGUI, Key};
 
 const TEXT: &'static str = "Unicode supprt?
 Ääkkönen, Café, über, 1000€, «ταБЬℓσ»
@@ -13,28 +13,26 @@ Flip: (╯°□°）╯︵ ┻━┻
 
 #[cfg(target_os = "macos")]
 fn open_notepad(kbd: autogui::Keyboard) -> autogui::Keyboard {
-    kbd
-    .delay(Duration::from_millis(500))
-    .press(Key::LeftSuper)
+    kbd.delay(Duration::from_millis(500))
+        .press(Key::LeftSuper)
         .tap(Key::Space)
         .release(Key::LeftSuper)
-    .write("textedit")
-    .tap(Key::Return)
-    .delay(Duration::from_millis(1000))
-    .press(Key::LeftSuper)
+        .write("textedit")
+        .tap(Key::Return)
+        .delay(Duration::from_millis(1000))
+        .press(Key::LeftSuper)
         .tap(Key::N)
         .release(Key::LeftSuper)
 }
 
 #[cfg(target_os = "windows")]
 fn open_notepad(kbd: autogui::Keyboard) -> autogui::Keyboard {
-    kbd
-    .delay(Duration::from_millis(500))
-    .press(Key::LeftSuper)
+    kbd.delay(Duration::from_millis(500))
+        .press(Key::LeftSuper)
         .tap(Key::R)
         .release(Key::LeftSuper)
-    .write("notepad")
-    .tap(Key::Return)
+        .write("notepad")
+        .tap(Key::Return)
 }
 
 fn main() {
